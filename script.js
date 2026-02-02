@@ -275,13 +275,11 @@ function spawnFloatingPhotos() {
     const container = document.getElementById('floatingPhotos');
     if (!container) return;
 
-    let loadedCount = 0;
     for (let i = 1; i <= PHOTO_COUNT; i++) {
         const img = document.createElement('img');
         img.className = 'floating-photo';
         img.src = `img${i}.JPEG`;
 
-        // Only add the image if it successfully loads
         img.onload = () => {
             const pos = getNonOverlappingPosition();
 
@@ -298,19 +296,18 @@ function spawnFloatingPhotos() {
                 vy: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random() * 0.6)
             });
 
-            loadedCount++;
-            if (loadedCount === PHOTO_COUNT) {
-                // Start movement only after all images are loaded
+            // Start movement only after at least one image is loaded
+            if (floatingPhotos.length === 1) {
                 requestAnimationFrame(updateFloatingPhotos);
             }
         };
 
-        // Handle missing images
         img.onerror = () => {
-            console.warn(`Image img${i}.JPEG failed to load, skipping.`);
+            console.warn(`Image img${i}.JPEG not found, skipping.`);
         };
     }
 }
+
 /* Spawn fully ON screen, no clipping */
 function getNonOverlappingPosition() {
     let x, y, safe;
