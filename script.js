@@ -257,7 +257,7 @@ window.addEventListener('DOMContentLoaded', positionFloatingPhotos);
    FLOATING PHOTO BACKGROUND
 ================================ */
 
-const PHOTO_COUNT = 15;
+const PHOTO_COUNT = 13;
 
 /* Bigger photos */
 const PHOTO_SIZE = { w: 180, h: 240 };
