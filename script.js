@@ -239,4 +239,17 @@ function setupMusicPlayer() {
             musicToggle.textContent = config.music.startText;
         }
     });
+// Position floating couple images
+function positionFloatingPhotos() {
+    const photos = document.querySelectorAll('.floating-photo');
+
+    photos.forEach(photo => {
+        photo.style.left = Math.random() * 80 + 'vw';
+        photo.style.top = Math.random() * 70 + 'vh';
+        photo.style.animationDelay = Math.random() * 4 + 's';
+    });
+}
+
+window.addEventListener('DOMContentLoaded', positionFloatingPhotos);
+
 } 
