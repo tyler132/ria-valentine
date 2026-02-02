@@ -266,6 +266,10 @@ const PHOTO_SIZE = { w: 180, h: 240 };
 const PHOTO_SPEED = 0.5;
 
 const floatingPhotos = [];
+img.onerror = () => {
+    console.warn(`Image ${img.src} failed to load.`);
+    img.style.display = 'none'; // hide broken image
+};
 
 function spawnFloatingPhotos() {
     const container = document.getElementById('floatingPhotos');
