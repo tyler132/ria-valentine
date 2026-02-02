@@ -68,43 +68,6 @@ body {
     animation-duration: calc(var(--float-duration) + 6s);
     animation-delay: -3s;
 }
-
-/* Gentle floating motion */
-@keyframes photo-float {
-    0% {
-        transform: translateY(0) translateX(0) rotate(-2deg);
-    }
-    50% {
-        transform: translateY(-40px) translateX(20px) rotate(2deg);
-    }
-    100% {
-        transform: translateY(0) translateX(0) rotate(-2deg);
-    }
-}
-
-/* Responsive sizing */
-@media (max-width: 768px) {
-    .floating-photo {
-        width: 100px;
-        height: 130px;
-    }
-}
-
-.heart, .bear {
-    position: absolute;
-    font-size: 2rem;
-    animation: float var(--float-duration) linear infinite;
-}
-
-@keyframes float {
-    0% {
-        transform: translateY(100vh) translateX(0);
-    }
-    100% {
-        transform: translateY(-100px) translateX(var(--float-distance));
-    }
-}
-
 .cute-btn {
     background: var(--button-color);
     border: none;
