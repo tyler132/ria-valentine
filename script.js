@@ -257,9 +257,9 @@ window.addEventListener('DOMContentLoaded', positionFloatingPhotos);
    FLOATING PHOTO BACKGROUND
 ================================ */
 
-const PHOTO_COUNT = 12; // 10–12 looks perfect
-const PHOTO_SIZE = { w: 130, h: 170 };
-const PHOTO_SPEED = 0.6; // increase = faster (0.5–0.9 sweet spot)
+const PHOTO_COUNT = 12;
+const PHOTO_SIZE = { w: 140, h: 180 };
+const PHOTO_SPEED = 0.6;
 
 const floatingPhotos = [];
 
@@ -283,8 +283,8 @@ function spawnFloatingPhotos() {
             el: img,
             x: pos.x,
             y: pos.y,
-            vx: (Math.random() > 0.5 ? 1 : -1) * (Math.random() + PHOTO_SPEED),
-            vy: (Math.random() > 0.5 ? 1 : -1) * (Math.random() + PHOTO_SPEED)
+            vx: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random()),
+            vy: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random())
         });
     }
 
@@ -312,7 +312,7 @@ function getNonOverlappingPosition() {
         }
 
         attempts++;
-    } while (!safe && attempts < 100);
+    } while (!safe && attempts < 150);
 
     return { x, y };
 }
@@ -331,7 +331,8 @@ function updateFloatingPhotos() {
             p.vy *= -1;
         }
 
-        p.el.style.transform = `translate(${p.x}px, ${p.y}px)`;
+        p.el.style.left = p.x + 'px';
+        p.el.style.top = p.y + 'px';
     }
 
     requestAnimationFrame(updateFloatingPhotos);
