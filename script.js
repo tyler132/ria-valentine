@@ -275,30 +275,42 @@ function spawnFloatingPhotos() {
     const container = document.getElementById('floatingPhotos');
     if (!container) return;
 
+    let loadedCount = 0;
     for (let i = 1; i <= PHOTO_COUNT; i++) {
         const img = document.createElement('img');
-        img.src = `img${i}.JPEG`;
         img.className = 'floating-photo';
+        img.src = `img${i}.JPEG`;
 
-        const pos = getNonOverlappingPosition();
+        // Only add the image if it successfully loads
+        img.onload = () => {
+            const pos = getNonOverlappingPosition();
 
-        img.style.left = pos.x + 'px';
-        img.style.top = pos.y + 'px';
+            img.style.left = pos.x + 'px';
+            img.style.top = pos.y + 'px';
 
-        container.appendChild(img);
+            container.appendChild(img);
 
-        floatingPhotos.push({
-            el: img,
-            x: pos.x,
-            y: pos.y,
-            vx: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random() * 0.6),
-            vy: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random() * 0.6)
-        });
+            floatingPhotos.push({
+                el: img,
+                x: pos.x,
+                y: pos.y,
+                vx: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random() * 0.6),
+                vy: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random() * 0.6)
+            });
+
+            loadedCount++;
+            if (loadedCount === PHOTO_COUNT) {
+                // Start movement only after all images are loaded
+                requestAnimationFrame(updateFloatingPhotos);
+            }
+        };
+
+        // Handle missing images
+        img.onerror = () => {
+            console.warn(`Image img${i}.JPEG failed to load, skipping.`);
+        };
     }
-
-    requestAnimationFrame(updateFloatingPhotos);
 }
-
 /* Spawn fully ON screen, no clipping */
 function getNonOverlappingPosition() {
     let x, y, safe;
