@@ -357,4 +357,3 @@ function updateFloatingPhotos() {
 }
 
 window.addEventListener('DOMContentLoaded', spawnFloatingPhotos);
-
