@@ -257,34 +257,29 @@ window.addEventListener('DOMContentLoaded', positionFloatingPhotos);
    FLOATING PHOTO BACKGROUND
 ================================ */
 
-const PHOTO_COUNT = 13;
-
-/* Bigger photos */
 const PHOTO_SIZE = { w: 180, h: 240 };
-
-/* Smooth speed */
 const PHOTO_SPEED = 0.5;
-
+const TOTAL_IMAGES = 13; // actual images you have
 const floatingPhotos = [];
-img.onerror = () => {
-    console.warn(`Image ${img.src} failed to load.`);
-    img.style.display = 'none'; // hide broken image
-};
+const existingImages = []; // store only images that actually load
 
 function spawnFloatingPhotos() {
     const container = document.getElementById('floatingPhotos');
     if (!container) return;
 
-    for (let i = 1; i <= PHOTO_COUNT; i++) {
+    for (let i = 1; i <= TOTAL_IMAGES; i++) {
         const img = document.createElement('img');
         img.className = 'floating-photo';
         img.src = `img${i}.JPEG`;
 
         img.onload = () => {
+            existingImages.push(img.src); // keep track of available images
             const pos = getNonOverlappingPosition();
 
             img.style.left = pos.x + 'px';
             img.style.top = pos.y + 'px';
+            img.style.width = PHOTO_SIZE.w + 'px';
+            img.style.height = PHOTO_SIZE.h + 'px';
 
             container.appendChild(img);
 
@@ -296,7 +291,11 @@ function spawnFloatingPhotos() {
                 vy: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random() * 0.6)
             });
 
-            // Start movement only after at least one image is loaded
+            // Add flip-on-click
+            img.addEventListener('click', () => {
+                flipImage(img);
+            });
+
             if (floatingPhotos.length === 1) {
                 requestAnimationFrame(updateFloatingPhotos);
             }
@@ -308,13 +307,12 @@ function spawnFloatingPhotos() {
     }
 }
 
-/* Spawn fully ON screen, no clipping */
+// Random non-overlapping position fully on screen
 function getNonOverlappingPosition() {
     let x, y, safe;
-    let attempts = 0;
-
     const maxX = window.innerWidth - PHOTO_SIZE.w;
     const maxY = window.innerHeight - PHOTO_SIZE.h;
+    let attempts = 0;
 
     do {
         safe = true;
@@ -322,22 +320,18 @@ function getNonOverlappingPosition() {
         y = Math.random() * maxY;
 
         for (const p of floatingPhotos) {
-            if (
-                Math.abs(p.x - x) < PHOTO_SIZE.w &&
-                Math.abs(p.y - y) < PHOTO_SIZE.h
-            ) {
+            if (Math.abs(p.x - x) < PHOTO_SIZE.w && Math.abs(p.y - y) < PHOTO_SIZE.h) {
                 safe = false;
                 break;
             }
         }
-
         attempts++;
     } while (!safe && attempts < 200);
 
     return { x, y };
 }
 
-/* Smooth bounce off webpage edges */
+// Smooth bounce off edges
 function updateFloatingPhotos() {
     const maxX = window.innerWidth - PHOTO_SIZE.w;
     const maxY = window.innerHeight - PHOTO_SIZE.h;
@@ -346,27 +340,34 @@ function updateFloatingPhotos() {
         p.x += p.vx;
         p.y += p.vy;
 
-        if (p.x <= 0) {
-            p.x = 0;
-            p.vx *= -1;
-        } else if (p.x >= maxX) {
-            p.x = maxX;
-            p.vx *= -1;
-        }
+        if (p.x <= 0 || p.x >= maxX) p.vx *= -1;
+        if (p.y <= 0 || p.y >= maxY) p.vy *= -1;
 
-        if (p.y <= 0) {
-            p.y = 0;
-            p.vy *= -1;
-        } else if (p.y >= maxY) {
-            p.y = maxY;
-            p.vy *= -1;
-        }
+        p.x = Math.max(0, Math.min(maxX, p.x));
+        p.y = Math.max(0, Math.min(maxY, p.y));
 
         p.el.style.left = p.x + 'px';
         p.el.style.top = p.y + 'px';
     }
 
     requestAnimationFrame(updateFloatingPhotos);
+}
+
+// Flip image to a random existing image
+function flipImage(img) {
+    img.style.transition = 'transform 0.6s';
+    img.style.transform = 'rotateY(180deg)';
+
+    setTimeout(() => {
+        // pick a random new image
+        let newSrc;
+        do {
+            newSrc = existingImages[Math.floor(Math.random() * existingImages.length)];
+        } while (newSrc === img.src && existingImages.length > 1);
+
+        img.src = newSrc;
+        img.style.transform = 'rotateY(0deg)';
+    }, 300); // halfway through flip
 }
 
 window.addEventListener('DOMContentLoaded', spawnFloatingPhotos);
