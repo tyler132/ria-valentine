@@ -43,6 +43,49 @@ body {
     pointer-events: none;
     z-index: 1;
 }
+/* Floating couple images */
+.floating-photo {
+    position: absolute;
+    width: 140px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 
+        0 10px 30px rgba(255, 107, 107, 0.35),
+        0 0 20px rgba(255, 135, 135, 0.25);
+    animation: photo-float var(--float-duration) ease-in-out infinite;
+    pointer-events: none;
+    opacity: 0.95;
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px);
+}
+
+/* Slight variation so they don't sync */
+.floating-photo.photo-2 {
+    animation-duration: calc(var(--float-duration) + 6s);
+    animation-delay: -3s;
+}
+
+/* Gentle floating motion */
+@keyframes photo-float {
+    0% {
+        transform: translateY(0) translateX(0) rotate(-2deg);
+    }
+    50% {
+        transform: translateY(-40px) translateX(20px) rotate(2deg);
+    }
+    100% {
+        transform: translateY(0) translateX(0) rotate(-2deg);
+    }
+}
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+    .floating-photo {
+        width: 100px;
+        height: 130px;
+    }
+}
 
 .heart, .bear {
     position: absolute;
