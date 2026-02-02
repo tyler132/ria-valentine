@@ -253,3 +253,88 @@ function positionFloatingPhotos() {
 window.addEventListener('DOMContentLoaded', positionFloatingPhotos);
 
 } 
+/* ===============================
+   FLOATING PHOTO BACKGROUND
+================================ */
+
+const PHOTO_COUNT = 12; // 10–12 looks perfect
+const PHOTO_SIZE = { w: 130, h: 170 };
+const PHOTO_SPEED = 0.6; // increase = faster (0.5–0.9 sweet spot)
+
+const floatingPhotos = [];
+
+function spawnFloatingPhotos() {
+    const container = document.getElementById('floatingPhotos');
+    if (!container) return;
+
+    for (let i = 1; i <= PHOTO_COUNT; i++) {
+        const img = document.createElement('img');
+        img.src = `img${i}.JPEG`;
+        img.className = 'floating-photo';
+
+        const pos = getNonOverlappingPosition();
+
+        img.style.left = pos.x + 'px';
+        img.style.top = pos.y + 'px';
+
+        container.appendChild(img);
+
+        floatingPhotos.push({
+            el: img,
+            x: pos.x,
+            y: pos.y,
+            vx: (Math.random() > 0.5 ? 1 : -1) * (Math.random() + PHOTO_SPEED),
+            vy: (Math.random() > 0.5 ? 1 : -1) * (Math.random() + PHOTO_SPEED)
+        });
+    }
+
+    requestAnimationFrame(updateFloatingPhotos);
+}
+
+/* Prevent overlapping spawn */
+function getNonOverlappingPosition() {
+    let x, y, safe;
+    let attempts = 0;
+
+    do {
+        safe = true;
+        x = Math.random() * (window.innerWidth - PHOTO_SIZE.w);
+        y = Math.random() * (window.innerHeight - PHOTO_SIZE.h);
+
+        for (const p of floatingPhotos) {
+            if (
+                Math.abs(p.x - x) < PHOTO_SIZE.w &&
+                Math.abs(p.y - y) < PHOTO_SIZE.h
+            ) {
+                safe = false;
+                break;
+            }
+        }
+
+        attempts++;
+    } while (!safe && attempts < 100);
+
+    return { x, y };
+}
+
+/* Movement + edge bounce */
+function updateFloatingPhotos() {
+    for (const p of floatingPhotos) {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x <= 0 || p.x + PHOTO_SIZE.w >= window.innerWidth) {
+            p.vx *= -1;
+        }
+
+        if (p.y <= 0 || p.y + PHOTO_SIZE.h >= window.innerHeight) {
+            p.vy *= -1;
+        }
+
+        p.el.style.transform = `translate(${p.x}px, ${p.y}px)`;
+    }
+
+    requestAnimationFrame(updateFloatingPhotos);
+}
+
+window.addEventListener('DOMContentLoaded', spawnFloatingPhotos);
