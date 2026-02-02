@@ -258,8 +258,12 @@ window.addEventListener('DOMContentLoaded', positionFloatingPhotos);
 ================================ */
 
 const PHOTO_COUNT = 12;
-const PHOTO_SIZE = { w: 140, h: 180 };
-const PHOTO_SPEED = 0.6;
+
+/* Bigger photos */
+const PHOTO_SIZE = { w: 180, h: 240 };
+
+/* Smooth speed */
+const PHOTO_SPEED = 0.5;
 
 const floatingPhotos = [];
 
@@ -283,23 +287,26 @@ function spawnFloatingPhotos() {
             el: img,
             x: pos.x,
             y: pos.y,
-            vx: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random()),
-            vy: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random())
+            vx: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random() * 0.6),
+            vy: (Math.random() > 0.5 ? 1 : -1) * (PHOTO_SPEED + Math.random() * 0.6)
         });
     }
 
     requestAnimationFrame(updateFloatingPhotos);
 }
 
-/* Prevent overlapping spawn */
+/* Spawn fully ON screen, no clipping */
 function getNonOverlappingPosition() {
     let x, y, safe;
     let attempts = 0;
 
+    const maxX = window.innerWidth - PHOTO_SIZE.w;
+    const maxY = window.innerHeight - PHOTO_SIZE.h;
+
     do {
         safe = true;
-        x = Math.random() * (window.innerWidth - PHOTO_SIZE.w);
-        y = Math.random() * (window.innerHeight - PHOTO_SIZE.h);
+        x = Math.random() * maxX;
+        y = Math.random() * maxY;
 
         for (const p of floatingPhotos) {
             if (
@@ -312,22 +319,33 @@ function getNonOverlappingPosition() {
         }
 
         attempts++;
-    } while (!safe && attempts < 150);
+    } while (!safe && attempts < 200);
 
     return { x, y };
 }
 
-/* Movement + edge bounce */
+/* Smooth bounce off webpage edges */
 function updateFloatingPhotos() {
+    const maxX = window.innerWidth - PHOTO_SIZE.w;
+    const maxY = window.innerHeight - PHOTO_SIZE.h;
+
     for (const p of floatingPhotos) {
         p.x += p.vx;
         p.y += p.vy;
 
-        if (p.x <= 0 || p.x + PHOTO_SIZE.w >= window.innerWidth) {
+        if (p.x <= 0) {
+            p.x = 0;
+            p.vx *= -1;
+        } else if (p.x >= maxX) {
+            p.x = maxX;
             p.vx *= -1;
         }
 
-        if (p.y <= 0 || p.y + PHOTO_SIZE.h >= window.innerHeight) {
+        if (p.y <= 0) {
+            p.y = 0;
+            p.vy *= -1;
+        } else if (p.y >= maxY) {
+            p.y = maxY;
             p.vy *= -1;
         }
 
@@ -339,3 +357,4 @@ function updateFloatingPhotos() {
 }
 
 window.addEventListener('DOMContentLoaded', spawnFloatingPhotos);
+
