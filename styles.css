@@ -62,7 +62,19 @@ body {
     border: 4px solid rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(4px);
 }
-
+.floating-elements {
+    position: fixed; 
+    width: 100%; 
+    height: 100%; 
+    pointer-events: none; 
+    z-index: 1; } 
+.heart, .bear { 
+    position: absolute; 
+    font-size: 2rem; 
+    animation: float var(--float-duration) linear infinite;
+} 
+@keyframes float { 0%{
+    transform: translateY(100vh) translateX(0); } 100% { transform: translateY(-100px) translateX(var(--float-distance)); } }
 /* Slight variation so they don't sync */
 .floating-photo.photo-2 {
     animation-duration: calc(var(--float-duration) + 6s);
